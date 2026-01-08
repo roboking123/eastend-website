@@ -1,0 +1,43 @@
+.authButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground-accent);
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.authButton:hover:not(:disabled) {
+    background: var(--surface-subtle);
+    border-color: var(--foreground-accent);
+}
+
+.authButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.googleIcon {
+    flex-shrink: 0;
+}
+
+.userContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.userName {
+    font-size: 0.875rem;
+    color: var(--foreground-accent);
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

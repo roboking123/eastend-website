@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { content } from "@/constants/content";
+import { AuthButton } from "@/components/auth";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,6 +51,7 @@ export default function Header() {
                                 {item.label}
                             </Link>
                         ))}
+                        <AuthButton />
                     </nav>
 
                     {/* Mobile Menu Button */}
