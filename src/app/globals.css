@@ -1,0 +1,400 @@
+@import "tailwindcss";
+
+/* ============================================
+   東末世界 - 設計系統 (East End Design System)
+   
+   【核心配色規範】
+   1. 基底：白底 (#ffffff) / 黑字 (#1a1a2e)
+   2. 金色 (#c9a227)：用於人類/地神相關（邊框、Icon、裝飾線）
+   3. 銀色 (#a8a8a8)：用於吸血鬼/月神相關（邊框、Icon、裝飾線）
+   
+   【無障礙與可讀性鐵律 (Accessibility Rules)】
+   1. 🚫 嚴禁金底白字、白底金字：金色配白色對比度不足，手機上無法閱讀。
+      - 錯誤範例：bg-[#c9a227] text-white
+      - ⚡ 常見陷阱：hover 時加 hover:text-gold 但背景是白色！爽用就忘了規則！
+   2. 🚫 嚴禁銀底白字、白底銀字：銀色配白色對比度同樣不足！
+      - 錯誤範例：bg-silver text-white 或 hover:text-silver 在白底上
+   3. ✅ 正確強調：
+      - 深色背景 + 金/銀文字 (bg-primary text-gold / text-silver)
+      - 白底 + 金/銀邊框 (border-gold / border-silver)
+   4. 🚫 內文禁用金/銀色：正文必須使用深灰/黑色，裝飾色不可用於長篇閱讀。
+   
+   【配色對應】
+   - 金色系：人類、大精靈、地神造物、城市
+   - 銀色系：吸血鬼、月神造物、荒野/海域
+   ============================================ */
+
+:root {
+  /* 背景色 */
+  --bg-primary: #ffffff;
+  --bg-secondary: #faf9f6;
+  --bg-accent: #f5f3ef;
+
+  /* 文字色 (黑/深灰系) */
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a5a;
+  --text-muted: #7a7a8a;
+
+
+  /* 金色裝飾 */
+  --gold: #c9a227;
+  --gold-light: #f5d77a;
+  --gold-dark: #9a7b1c;
+
+  /* 銀色裝飾 */
+  --silver: #a8a8a8;
+  --silver-light: #c0c0c0;
+  --silver-dark: #808080;
+
+  /* 邊框 */
+  --border: #e5e5e5;
+  --border-accent: #d4d4d4;
+
+  /* 陰影 */
+  --shadow: rgba(0, 0, 0, 0.08);
+  --shadow-gold: rgba(201, 162, 39, 0.2);
+  --shadow-silver: rgba(168, 168, 168, 0.3);
+}
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-noto-sans);
+  --font-serif: var(--font-noto-serif);
+
+  /* Design System Tokens */
+  --color-primary: var(--text-primary);
+  /* #1a1a2e */
+  --color-gold: var(--gold);
+  /* #c9a227 */
+  --color-silver: var(--silver);
+  /* #a8a8a8 */
+  --color-muted: var(--text-muted);
+  /* #7a7a8a */
+  --color-secondary: var(--text-secondary);
+  /* #4a4a5a */
+  --color-surface: var(--bg-secondary);
+  /* #faf9f6 */
+  --color-border-base: var(--border);
+  /* #e5e5e5 */
+}
+
+/* 基本樣式 */
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Noto Sans TC', Arial, sans-serif;
+}
+
+
+
+/* 卡片樣式 */
+.card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 8px 30px var(--shadow-gold);
+  transform: translateY(-4px);
+}
+
+/* 銀色卡片變體 (用於非城市地點如荒野、海域) */
+.card-silver:hover {
+  border-color: var(--silver);
+  box-shadow: 0 8px 30px var(--shadow-silver);
+}
+
+/* 按鈕樣式 - 統一白底灰框，金色 Hover */
+/* ============================================
+   按鈕樣式 (Buttons) - 全面膠囊化 (Capsule)
+   ============================================ */
+
+/* 基礎膠囊樣式 - 共享 */
+.btn-base,
+.btn-primary,
+.btn-outline,
+.btn-sm,
+.btn-inverse {
+  border-radius: 9999px;
+  /* 強制膠囊形 */
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 2rem;
+  /* 標準尺寸 (Standard Size) */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* 主按鈕：深底金字 (符合高對比規範) */
+/* 主按鈕：深底金字 (符合高對比規範) */
+.btn-primary {
+  background: var(--text-primary);
+  /* #1a1a2e */
+  color: var(--gold);
+  /* #c9a227 */
+  border: 1px solid var(--text-primary);
+}
+
+.btn-primary:hover {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-gold);
+}
+
+/* 反白按鈕 (用於深色背景頁面 如 404/Hero) */
+.btn-inverse {
+  background: #ffffff;
+  color: var(--text-primary);
+  border: 1px solid #ffffff;
+}
+
+.btn-inverse:hover {
+  background: var(--text-primary);
+  color: var(--gold);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-gold);
+}
+
+/* 次要按鈕/篩選器：透明底或白底 (Ghost/Outline) */
+/* 次要按鈕/篩選器：透明底或白底 (Ghost/Outline) */
+/* 包含 Header 導覽列：預設透明，Hover 時轉為深底金字 (High Contrast) */
+.btn-outline {
+  background: transparent;
+  color: var(--text-muted);
+  /* #7a7a8a */
+  border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+  background: var(--text-primary);
+  color: var(--gold);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-gold);
+}
+
+/* 活躍狀態 (用於篩選器選中) - 金色預設 */
+.btn-active {
+  background: var(--text-primary) !important;
+  color: var(--gold) !important;
+  border-color: var(--gold) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 銀色活躍狀態 (吸血鬼篩選) */
+.btn-active-silver {
+  background: var(--text-primary) !important;
+  color: var(--silver) !important;
+  border-color: var(--silver) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 銀色 hover 變體 */
+.btn-outline-silver:hover {
+  background: var(--text-primary);
+  color: var(--silver);
+  border-color: var(--silver);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-silver);
+}
+
+/* 小型按鈕 (Header/Filters) */
+/* 小型按鈕 (Header/Filters) */
+.btn-sm {
+  padding: 0.5rem 1.25rem !important;
+  /* Override standard padding */
+  font-size: 0.875rem;
+  /* 14px */
+}
+
+/* 標籤樣式 (Tags) - 統一膠囊 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  /* 12px */
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  white-space: nowrap;
+}
+
+/* 自定義滾動條 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+/* ============================================
+   Typography System (文字系統)
+   ============================================ */
+.heading-hero {
+  @apply text-5xl sm:text-7xl lg:text-8xl font-bold;
+  line-height: 1.1;
+}
+
+.heading-section {
+  @apply text-3xl sm:text-4xl font-bold;
+}
+
+.heading-item {
+  @apply text-xl font-bold;
+}
+
+.text-lead {
+  @apply text-xl sm:text-2xl font-light;
+}
+
+.text-body {
+  @apply text-lg sm:text-xl leading-relaxed;
+}
+
+/* ============================================
+   Layout System (佈局系統)
+   ============================================ */
+.container-base {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.section-base {
+  @apply py-16 md:py-24;
+}
+
+/* 動畫 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
+
+/* 分隔線 */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+/* 平滑滾動 */
+/* 平滑滾動與吸附容器 */
+html {
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  /* 防止 Scrollbar 出現時導致的 Layout Shift */
+}
+
+.snap-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-padding-top: 64px;
+  /* Header height */
+}
+
+.snap-section {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+/* 角色卡片固定高度 */
+/* 角色卡片固定高度 */
+.character-card {
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.character-card .description {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+
+/* 地圖區域 hover 效果 - 浮起效果 */
+.map-region {
+  fill: transparent;
+  stroke: transparent;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+/* 預設：金色 (城市) */
+.map-region:hover {
+  fill: rgba(255, 255, 255, 0.08);
+  stroke: var(--gold);
+  stroke-width: 3;
+  transform: translateY(-4px) scale(1.01);
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4));
+}
+
+.map-region.active {
+  fill: rgba(201, 162, 39, 0.1);
+  stroke: var(--gold);
+  stroke-width: 3;
+  transform: translateY(-2px);
+  filter: drop-shadow(0 4px 12px var(--shadow-gold));
+}
+
+/* 銀色變體 (區域/海域) */
+.map-region-silver:hover {
+  fill: rgba(255, 255, 255, 0.08);
+  stroke: var(--silver);
+  stroke-width: 3;
+  transform: translateY(-4px) scale(1.01);
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4));
+}
+
+.map-region-silver.active {
+  fill: rgba(168, 168, 168, 0.1);
+  stroke: var(--silver);
+  stroke-width: 3;
+  transform: translateY(-2px);
+  filter: drop-shadow(0 4px 12px var(--shadow-silver));
+}
