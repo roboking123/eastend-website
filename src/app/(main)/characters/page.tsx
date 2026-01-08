@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import { content } from "@/constants/content";
 
 export default function CharactersPage() {
@@ -15,9 +13,7 @@ export default function CharactersPage() {
     );
 
     return (
-        <div className="min-h-screen bg-background text-primary">
-            <Header />
-
+        <>
             <section className="pt-24 pb-12 px-4 bg-surface">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center">
@@ -106,8 +102,6 @@ export default function CharactersPage() {
                     </div>
                 </div>
             </section>
-
-            <Footer />
-        </div>
+        </>
     );
 }

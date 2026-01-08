@@ -1,7 +1,6 @@
 "use client";
 
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+
 import Image from "next/image";
 import { motion } from "framer-motion";
 
@@ -11,6 +10,7 @@ interface Character {
     alias: string;
     faction: string;
     race: string;
+    theme?: string;
     description: string;
     quote?: string;
     heroImage?: string;
@@ -26,9 +26,33 @@ export default function CharacterClient({ character }: { character: Character })
     // Default to undefined if no hero image
     const heroImage = character.heroImage;
 
+    // Determine theme based on explicit theme field
+    const isSilver = character.theme === "silver";
+    const themeColorText = isSilver ? "text-silver" : "text-gold";
+    const themeColorBorder = isSilver ? "border-silver" : "border-gold";
+    const themeColorBorderLight = isSilver ? "border-silver/30" : "border-gold/30";
+    const themeBtnClass = isSilver ? "btn-outline-silver" : "btn-outline";
+
+    // Gradient for Hero bottom overlay: Fade from black to Theme Color (very dark/subtle) mixed with Surface?
+    // User requested "Black -> White" (current to-surface) to become "Black -> Silver/Gold".
+    // To ensure smooth transition to next section (which is bg-surface), we might need to be careful.
+    // Let's try fading to a tinted surface or just the theme color implies a strong tint.
+    // Let's try: from-black/80 via-black/40 to-{color}/20 (keeping transparency to show image but tinted)
+    // But since it connects to next section, 'to-surface' creates the blend.
+    // Let's modify the `via` or `to` to include the theme color hint. 
+    // Actually, user said "Black gradient to White... make it gradient to Silver/Gold".
+    const themeGradient = isSilver
+        ? "from-black/80 via-[#a8a8a8]/10 to-surface"
+        : "from-black/80 via-[#c9a227]/10 to-surface";
+
+    const statLabels: Record<string, string> = {
+        role: "身份",
+        status: "狀態",
+        ability: "能力"
+    };
+
     return (
         <div className="h-screen w-full overflow-y-scroll snap-y snap-mandatory bg-surface text-primary font-serif scroll-smooth">
-            <Header />
 
             {/* Hero Section - Immersive & Cinematic */}
             <section className="relative h-screen w-full flex items-center justify-center overflow-hidden snap-start shrink-0">
@@ -44,10 +68,10 @@ export default function CharacterClient({ character }: { character: Character })
                         />
                     ) : (
                         // Placeholder: Rich dark gradient for premium feel
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a12] via-primary to-[#0f0f13]" />
+                        <div className={`absolute inset-0 bg-gradient-to-br from-[#0a0a12] via-primary to-[#0f0f13]`} />
                     )}
                     {/* Gradient Overlays for readability and mood */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-surface z-10"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-b ${themeGradient} z-10`}></div>
                     <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50 z-10"></div>
                 </div>
 
@@ -59,18 +83,20 @@ export default function CharacterClient({ character }: { character: Character })
                         transition={{ duration: 1, delay: 0.2 }}
                     >
                         {/* Faction Badge */}
-                        <div className="inline-block mb-6 px-4 py-1 border border-white/30 rounded-full bg-black/20 backdrop-blur-sm text-sm tracking-[0.2em] uppercase font-sans text-muted">
+                        <div className={`inline-block mb-6 px-4 py-1 border ${themeColorBorderLight} rounded-full bg-black/40 backdrop-blur-sm text-sm tracking-[0.2em] uppercase font-sans ${themeColorText}`}>
                             {character.race} · {character.faction}
                         </div>
 
                         {/* Name */}
-                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 tracking-wide drop-shadow-2xl">
+                        <h1 className={`text-5xl md:text-7xl lg:text-8xl font-bold mb-8 tracking-wide drop-shadow-2xl ${themeColorText}`}>
                             {character.name}
+                            {/* Reserved space for animation */}
+                            <span className="inline-block w-4 h-4 ml-4" />
                         </h1>
 
                         {/* Quote */}
                         {character.quote && (
-                            <p className="text-xl md:text-2xl italic text-muted font-light tracking-wider leading-relaxed max-w-3xl mx-auto border-l-2 border-gold pl-6 text-left md:text-center md:border-l-0 md:border-t-0">
+                            <p className={`text-xl md:text-2xl italic ${themeColorText} font-light tracking-wider leading-relaxed max-w-3xl mx-auto text-left md:text-center`}>
                                 {character.quote}
                             </p>
                         )}
@@ -82,7 +108,7 @@ export default function CharacterClient({ character }: { character: Character })
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.5, duration: 1 }}
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 text-white/50 animate-bounce"
+                    className={`absolute bottom-10 left-1/2 -translate-x-1/2 z-20 ${themeColorText} animate-bounce`}
                 >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -93,16 +119,16 @@ export default function CharacterClient({ character }: { character: Character })
             {/* Content Section Container (Stats + Bio) */}
             <section className="min-h-screen bg-surface relative z-30 snap-start flex flex-col">
 
-                {/* Stats / Quick Info Strip - Overlapping hero slightly */}
-                <div className="relative -mt-10 mx-4 md:mx-12 lg:mx-24 z-40">
-                    <div className="bg-primary text-white py-8 border-t border-gold/30 shadow-2xl rounded-lg">
+                {/* Stats / Quick Info Strip */}
+                <div className="relative pt-8 mx-4 md:mx-12 lg:mx-24 z-40">
+                    <div className={`bg-primary text-white py-8 border-t ${themeColorBorderLight} shadow-2xl rounded-lg`}>
                         <div className="max-w-6xl mx-auto px-6 flex flex-wrap justify-around gap-8 md:gap-12">
                             {character.stats && Object.entries(character.stats).map(([key, value]) => (
                                 <div key={key} className="text-center">
-                                    <h3 className="text-gold text-xs uppercase tracking-[0.15em] mb-1 font-sans opacity-80">
-                                        {key}
+                                    <h3 className={`${themeColorText} text-xs uppercase tracking-[0.15em] mb-1 font-sans opacity-80`}>
+                                        {statLabels[key] || key}
                                     </h3>
-                                    <p className="text-lg md:text-xl font-medium tracking-wide">
+                                    <p className={`text-lg md:text-xl font-medium tracking-wide ${themeColorText}`}>
                                         {value}
                                     </p>
                                 </div>
@@ -121,7 +147,7 @@ export default function CharacterClient({ character }: { character: Character })
                     >
                         <div className="flex flex-col gap-12 text-lg md:text-xl leading-loose text-secondary text-justify tracking-wide">
                             {character.fullBio?.map((paragraph, index) => (
-                                <p key={index} className={index === 0 ? "first-letter:text-5xl first-letter:font-bold first-letter:text-primary first-letter:mr-3 first-letter:float-left" : ""}>
+                                <p key={index}>
                                     {paragraph}
                                 </p>
                             ))}
@@ -132,14 +158,14 @@ export default function CharacterClient({ character }: { character: Character })
                                 — {character.alias} —
                             </p>
                             {/* Back Button */}
-                            <a href="/characters" className="btn-outline">
+                            <a href="/characters" className={themeBtnClass}>
                                 返回角色列表
                             </a>
                         </div>
                     </motion.div>
                 </main>
 
-                <Footer />
+
             </section>
         </div>
     );

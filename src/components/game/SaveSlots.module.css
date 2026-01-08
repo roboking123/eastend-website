@@ -1,0 +1,205 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--foreground-accent);
+  margin: 0;
+}
+
+.cloudStatus {
+  font-size: 0.875rem;
+}
+
+.cloudEnabled {
+  color: var(--success, #22c55e);
+}
+
+.cloudDisabled {
+  color: var(--foreground-muted);
+}
+
+.loginHint {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--foreground-muted);
+  text-align: center;
+}
+
+.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  color: #ef4444;
+  text-align: center;
+}
+
+.conflictWarning {
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  color: #eab308;
+  text-align: center;
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem;
+  color: var(--foreground-muted);
+}
+
+.slotsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* 存檔卡片 */
+.slotCard {
+  background: var(--surface-base);
+  border: 1px solid var(--border-base);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.slotCard:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.slotCard.empty {
+  border-style: dashed;
+  opacity: 0.7;
+}
+
+.slotCard.empty:hover {
+  opacity: 1;
+}
+
+.slotHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--surface-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.slotNumber {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--primary);
+}
+
+.deleteBtn {
+  background: transparent;
+  border: none;
+  color: var(--foreground-muted);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* 空存檔槽 */
+.emptyContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 1rem;
+}
+
+.emptyText {
+  color: var(--foreground-muted);
+  font-size: 0.875rem;
+}
+
+/* 有存檔的內容 */
+.slotContent {
+  padding: 1rem;
+}
+
+.saveName {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--foreground-accent);
+  margin-bottom: 0.5rem;
+}
+
+.characterInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--foreground-base);
+  margin-bottom: 0.75rem;
+}
+
+.metaInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--foreground-muted);
+  margin-bottom: 1rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionBtn {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--primary);
+  color: var(--gold);
+}
+
+.actionBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.actionBtn.secondary {
+  background: var(--surface-subtle);
+  color: var(--foreground-base);
+  border: 1px solid var(--border-base);
+}
+
+.actionBtn.secondary:hover {
+  background: var(--surface-base);
+  border-color: var(--primary);
+}

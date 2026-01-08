@@ -12,19 +12,18 @@ export const locations = [
         nameTW: "東末城",
         type: "city" as CityType,
         theme: "silver" as ThemeColor, // 吸血鬼/黑王統治
+        position: { x: 76.5, y: 61.8 }, // 右下方
         faction: "獨立城邦",
-        ruler: "黑王（城主）",
-        description: "黑王在帝國滅亡後建立的庇護所，唯一允許人類與吸血鬼平等待遇的城市。位於世界最東端，背靠虛無之海，是退無可退的最後堡壘。",
+        ruler: "東末城主",
+        description: "在帝國滅亡後建立的庇護所型城市，唯一允許人類與吸血鬼平等待遇的城市。位於世界最東端，背靠虛無之海，是退無可退的最後堡壘。",
         image: "/images/regions/Frame 1.png",
         details: [
             "滅國元年由黑王建立，收容大量難民後裔",
             "實行獨特的「血稅制度」維持兩族共存",
-            "城防主力為吸血鬼劍士，但受長老控制",
-            "城主權力實際上僅限城內，城外由長老管轄"
         ],
         landmarks: [
-            { name: "黑王城堡", description: "東末的至高權力象徵，同時也是長老們監視黑王的所在。不適合養育孩子。" },
-            { name: "貴族區別館", description: "黑王的私人別館，薇妮雅的住所。黑王前往需被大批護衛監視護送。" },
+            { name: "黑王城堡", description: "東末的至高權力象徵" },
+            { name: "貴族區別館", description: "黑王的私人別館，薇妮雅的住所。" },
             { name: "小教堂", description: "由老神父建立，現由約翰繼承。教廷傳統風格，充滿植物繪與自然光。" }
         ],
         systems: {
@@ -47,6 +46,7 @@ export const locations = [
         nameTW: "北都城",
         type: "city" as CityType,
         theme: "gold" as ThemeColor, // 人類/薪王統治，吸血鬼僅為躲藏客居
+        position: { x: 52.2, y: 24 }, // 上方偏中
         faction: "北郡",
         ruler: "薪王",
         description: "原帝國「北郡城」，帝國滅亡後由薪王統治。吸血鬼的傳統躲藏地之一，與東末城有頻繁貿易往來。",
@@ -73,6 +73,7 @@ export const locations = [
         nameTW: "西教廷",
         type: "city" as CityType,
         theme: "gold" as ThemeColor, // 人類/聖樹信仰
+        position: { x: 25.3, y: 49.5 }, // 左側中間
         faction: "聖樹教廷",
         ruler: "大祭司",
         description: "琉華/聖樹的勢力範圍，激進主張滅絕吸血鬼的宗教城邦。原為火之國的封地，帝國滅亡後成為獨立的宗教勢力。",
@@ -88,7 +89,6 @@ export const locations = [
             { name: "祭司學院", description: "培養吸血鬼殺手的訓練場，受聖樹魔法強化。" }
         ],
         funFacts: [
-            "西方人種以金髮綠眼聞名，語調帶有「歌唱感」",
             "帝國後期教廷激進化，迫使吸血鬼組織劍士反擊",
             "首都炎災改變地形後，追殺被迫終止而非和談"
         ]
@@ -99,14 +99,14 @@ export const locations = [
         nameTW: "首都遺址",
         type: "region" as CityType,
         theme: "gold" as ThemeColor, // 人類帝國遺產
+        position: { x: 52, y: 41 }, // 中央
         faction: "無",
         description: "昔日人類帝國的榮耀中心，百年前在「炎災」中毀滅。如今是危險的魔物盤據之地，傳說中仍埋藏著帝國時代的寶藏與秘密。",
         image: "/images/regions/Frame 5.png",
         details: [
             "曾是橫跨大陸的人類帝國首都",
             "火蛇「炎山」隕落之處",
-            "炎災後成為廢墟，魔物橫行",
-            "中央人種的發源地，標準口音的故鄉"
+            "炎災後成為廢墟，魔物橫行"
         ]
     },
     {
@@ -115,12 +115,13 @@ export const locations = [
         nameTW: "荒野地帶",
         type: "region" as CityType,
         theme: "silver" as ThemeColor, // 危險無人區
+        position: { x: 45, y: 45 }, // 中央偏左下
         faction: "無",
         description: "炎災後形成的廣闘荒地，魔物橫行，是各城之間的危險緩衝區。旅行者必須結伴而行，或雇用護衛。",
         image: "/images/regions/Frame 3.png",
         details: [
             "炎災徹底改變了這片土地的生態",
-            "吸血鬼劍士會在此巡邏，保護往來商隊",
+            "吸血鬼劍士會在此巡邏，保護往來商隊，同時也可能強徵血液",
             "城外走私血液交易盛行之地",
             "約 30% 的劍士戰力部署於此監視教廷"
         ]
@@ -131,13 +132,14 @@ export const locations = [
         nameTW: "內海",
         type: "sea" as CityType,
         theme: "gold" as ThemeColor, // 中立貿易通道
+        position: { x: 46, y: 67 }, // 下方中央
         faction: "無",
-        description: "大陸中央的內陸海，是連接東末城與北都城的重要水路交通樞紐。相對安全的中立區域。",
+        description: "首都南部的內陸海，勉強可看見中央有一小島。",
         image: "/images/regions/Frame 7.png",
         details: [
-            "東末城與北都城的主要貿易水路",
-            "漁業資源豐富",
-            "相對安全的水域，受各方勢力默認保護"
+            "即使並非虛無之海，因海之名，亦無正常人想靠近",
+            "因此儘管鄰近中央腹地，但自古以來就並非帝國屬地",
+            "人煙稀少之處，小心附近的吸血鬼。"
         ]
     },
     {
@@ -146,14 +148,14 @@ export const locations = [
         nameTW: "虛無之海",
         type: "sea" as CityType,
         theme: "silver" as ThemeColor, // 神秘未知/月神造物
+        position: { x: 12, y: 63 }, // 左下角（代表整個外圍）
         faction: "無",
-        description: "包圍整個大陸的致命海域。表面是海，本質是連結多重宇宙的介質。接觸即死，生存率為 0%。",
+        description: "包圍整個大陸的致命區域。",
         image: "/images/regions/Frame 6.png",
         details: [
-            "觸碰即溶解消失，當事人無痛覺",
+            "觸碰即溶解消失，當事人疑似無痛覺",
             "無論生物或物體皆無法倖存",
-            "真相：可通往其他世界，但目前無人知曉如何開啟",
-            "賢者曾試圖探索，損失大量實驗品後列為絕對禁忌"
+            "無需多做解釋，不想死就別靠近。"
         ]
     },
 ];

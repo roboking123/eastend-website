@@ -1,45 +1,47 @@
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import { races } from "@/constants/races";
 
 export default function RacesPage() {
     return (
-        <div className="bg-background text-primary min-h-screen">
-            <Header />
-
-            <main className="pt-24 pb-16">
-                <div className="container-base">
-                    {/* Page Header */}
-                    <div className="text-center mb-16">
-                        <h1 className="heading-hero mb-4">
-                            <span className="text-primary">種族介紹</span>
-                        </h1>
-                        <p className="text-body text-muted max-w-2xl mx-auto">
-                            在這個被虛無之海包圍的世界中，存在著三種主要智慧種族。
-                            他們各有起源，卻因命運糾纏在一起。
-                        </p>
+        <main className="pt-24 pb-16">
+            <div className="container-base">
+                {/* Page Header */}
+                <section className="pb-12 px-4">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="text-center">
+                            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                                <span className="text-primary">種族介紹</span>
+                            </h1>
+                            <p className="text-muted max-w-2xl mx-auto text-lg leading-relaxed">
+                                在這個被虛無之海包圍的世界中，存在著三種主要智慧種族。
+                                他們各有起源，卻因命運糾纏在一起。
+                            </p>
+                        </div>
                     </div>
+                </section>
 
-                    {/* Race Cards */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {races.map((race) => {
-                            // 吸血鬼用銀色（月神造物），其他用金色
-                            const isVampire = race.id === "vampire";
-                            const cardClass = isVampire ? "card card-silver" : "card";
-                            const accentColor = isVampire ? "bg-silver" : "bg-gold";
+                {/* Race Cards */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {races.map((race) => {
+                        // 吸血鬼用銀色（月神造物），其他用金色
+                        const isVampire = race.id === "vampire";
+                        const cardClass = isVampire ? "card card-silver" : "card";
+                        const accentColor = isVampire ? "bg-silver" : "bg-gold";
 
-                            return (
-                                <div
-                                    key={race.id}
-                                    className={`${cardClass} p-8 flex flex-col`}
-                                >
+                        return (
+                            <div
+                                key={race.id}
+                                className={`${cardClass} overflow-hidden flex flex-col`}
+                            >
+                                {/* 頂部裝飾條 */}
+                                <div className={`h-1 w-full ${accentColor}`}></div>
+
+                                <div className="p-8 flex flex-col flex-grow">
                                     {/* Header */}
                                     <div className="mb-6">
-                                        <div className={`w-12 h-1 ${accentColor} mb-4`} />
                                         <p className="text-sm text-muted mb-1">
                                             造物主：{race.creator}
                                         </p>
-                                        <h2 className="heading-section text-primary">
+                                        <h2 className="text-xl font-bold text-primary">
                                             {race.nameTW}
                                         </h2>
                                         <p className="text-sm text-muted italic">
@@ -90,13 +92,11 @@ export default function RacesPage() {
                                         </div>
                                     </div>
                                 </div>
-                            );
-                        })}
-                    </div>
+                            </div>
+                        );
+                    })}
                 </div>
-            </main>
-
-            <Footer />
-        </div>
+            </div>
+        </main>
     );
 }

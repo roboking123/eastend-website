@@ -1,16 +1,15 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import WorldMapSection from "@/components/features/WorldMapSection";
 
-export default function WorldPage() {
+export default function MainLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     return (
         <div className="min-h-screen bg-background text-primary">
             <Header />
-
-            <main>
-                <WorldMapSection />
-            </main>
-
+            <main>{children}</main>
             <Footer />
         </div>
     );

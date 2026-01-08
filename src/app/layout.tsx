@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_TC, Noto_Serif_TC } from "next/font/google";
+import { ModalProvider } from "@/components/ui";
 import "./globals.css";
 
 const notoSans = Noto_Sans_TC({
@@ -27,7 +28,9 @@ export default function RootLayout({
     return (
         <html lang="zh-TW">
             <body className={`${notoSans.variable} ${notoSerif.variable} antialiased`}>
-                {children}
+                <ModalProvider>
+                    {children}
+                </ModalProvider>
             </body>
         </html>
     );

@@ -24,45 +24,70 @@
    - 銀色系：吸血鬼、月神造物、荒野/海域
    ============================================ */
 
+/* ============================================
+   1. CSS 變數定義 (CSS Variables)
+   定義全站共用的顏色、陰影與邊框，方便統一管理與深色模式擴充。
+   ============================================ */
 :root {
   /* 背景色 */
   --bg-primary: #ffffff;
+  /* 主背景 (純白) */
   --bg-secondary: #faf9f6;
+  /* 次要背景 (米白，用於區塊/卡片) */
   --bg-accent: #f5f3ef;
+  /* 強調背景 (更深的米白) */
 
   /* 文字色 (黑/深灰系) */
   --text-primary: #1a1a2e;
+  /* 主要文字 (深藍黑) - 用於標題 */
   --text-secondary: #4a4a5a;
+  /* 次要文字 (深灰) - 用於內文 */
   --text-muted: #7a7a8a;
+  /* 弱化文字 (淺灰) - 用於說明/標籤 */
 
-
-  /* 金色裝飾 */
+  /* 金色裝飾 (人類/地神) */
   --gold: #c9a227;
+  /* 主金色 */
   --gold-light: #f5d77a;
+  /* 淺金 (Hover/Highlight) */
   --gold-dark: #9a7b1c;
+  /* 深金 (Active/Border) */
 
-  /* 銀色裝飾 */
+  /* 銀色裝飾 (吸血鬼/月神) */
   --silver: #a8a8a8;
+  /* 主銀色 */
   --silver-light: #c0c0c0;
+  /* 淺銀 */
   --silver-dark: #808080;
+  /* 深銀 */
 
   /* 邊框 */
   --border: #e5e5e5;
+  /* 通用邊框色 */
   --border-accent: #d4d4d4;
+  /* 強調邊框 */
 
   /* 陰影 */
   --shadow: rgba(0, 0, 0, 0.08);
+  /* 通用陰影 */
   --shadow-gold: rgba(201, 162, 39, 0.2);
+  /* 金色光暈 */
   --shadow-silver: rgba(168, 168, 168, 0.3);
+  /* 銀色光暈 */
 }
 
+/* ============================================
+   2. Tailwind v4 主題配置 (@theme)
+   將 CSS 變數映射到 Tailwind 的 Utility Classes。
+   例如：使用 text-primary 會自動對應到 var(--text-primary)
+   ============================================ */
 @theme inline {
   --color-background: var(--bg-primary);
   --color-foreground: var(--text-primary);
   --font-sans: var(--font-noto-sans);
   --font-serif: var(--font-noto-serif);
 
-  /* Design System Tokens */
+  /* 自定義顏色 Token */
   --color-primary: var(--text-primary);
   /* #1a1a2e */
   --color-gold: var(--gold);
@@ -79,68 +104,89 @@
   /* #e5e5e5 */
 }
 
-/* 基本樣式 */
+/* ============================================
+   3. 全局基礎樣式 (Base Styles)
+   ============================================ */
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
+  /* 使用 Noto Sans TC 作為主要字體，確保中文閱讀體驗 */
   font-family: 'Noto Sans TC', Arial, sans-serif;
 }
 
+/* 平滑滾動與吸附容器設定 */
+html {
+  scroll-behavior: smooth;
+  /* 防止 Scrollbar 出現/消失時導致頁面內容左右跳動 */
+  scrollbar-gutter: stable;
+}
 
-
-/* 卡片樣式 */
+/* ============================================
+   4. 元件樣式 (Components) - 卡片 (Cards)
+   ============================================ */
+/* 基礎卡片：白底、陰影、圓角 */
 .card {
   background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: 1rem;
   box-shadow: 0 4px 20px var(--shadow);
   transition: all 0.3s ease;
+  /* Hover 動畫過渡 */
 }
 
+/* 金色主題卡片 Hover 效果 (預設) */
 .card:hover {
   border-color: var(--gold);
   box-shadow: 0 8px 30px var(--shadow-gold);
   transform: translateY(-4px);
+  /* 輕微上浮 */
 }
 
-/* 銀色卡片變體 (用於非城市地點如荒野、海域) */
+/* 銀色主題卡片 Hover 效果 (需加上 card-silver class) */
 .card-silver:hover {
   border-color: var(--silver);
   box-shadow: 0 8px 30px var(--shadow-silver);
 }
 
-/* 按鈕樣式 - 統一白底灰框，金色 Hover */
 /* ============================================
-   按鈕樣式 (Buttons) - 全面膠囊化 (Capsule)
+   5. 元件樣式 (Components) - 按鈕 (Buttons)
+   採用膠囊型 (Capsule) 設計，統一互動體驗。
+   包含 Anti-Layout Shift 防抖動設計。
    ============================================ */
 
-/* 基礎膠囊樣式 - 共享 */
+/* 基礎按鈕樣式 (所有按鈕共用) */
 .btn-base,
 .btn-primary,
 .btn-outline,
 .btn-sm,
-.btn-inverse {
+.btn-inverse,
+.btn-danger {
   border-radius: 9999px;
   /* 強制膠囊形 */
   font-weight: 500;
   letter-spacing: 0.05em;
   padding: 0.75rem 2rem;
-  /* 標準尺寸 (Standard Size) */
+  /* 標準尺寸 padding */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
+  /* [Anti-Layout Shift] 核心修復：
+     確保所有按鈕預設都有 1px 邊框（即使是透明的）。
+     防止在切換到 Active 狀態（有邊框）時發生 2px 的寬度跳動。 */
+  border: 1px solid transparent;
 }
 
-/* 主按鈕：深底金字 (符合高對比規範) */
-/* 主按鈕：深底金字 (符合高對比規範) */
+/* 主按鈕：深底金字 (High Contrast) */
 .btn-primary {
   background: var(--text-primary);
   /* #1a1a2e */
   color: var(--gold);
   /* #c9a227 */
   border: 1px solid var(--text-primary);
+  /* 實心邊框 */
 }
 
 .btn-primary:hover {
@@ -151,7 +197,7 @@ body {
   box-shadow: 0 4px 12px var(--shadow-gold);
 }
 
-/* 反白按鈕 (用於深色背景頁面 如 404/Hero) */
+/* 反白按鈕：白底深字 (用於深色背景頁面) */
 .btn-inverse {
   background: #ffffff;
   color: var(--text-primary);
@@ -166,14 +212,27 @@ body {
   box-shadow: 0 4px 12px var(--shadow-gold);
 }
 
-/* 次要按鈕/篩選器：透明底或白底 (Ghost/Outline) */
-/* 次要按鈕/篩選器：透明底或白底 (Ghost/Outline) */
-/* 包含 Header 導覽列：預設透明，Hover 時轉為深底金字 (High Contrast) */
+/* 危險按鈕：紅底白字 (用於刪除/破壞性操作) */
+.btn-danger {
+  background: #dc2626;
+  color: #ffffff;
+  border: 1px solid #dc2626;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+/* 幽靈按鈕/外框按鈕：透明底 (常用於 Header 導覽列) */
 .btn-outline {
   background: transparent;
   color: var(--text-muted);
-  /* #7a7a8a */
+  /* 預設灰字 */
   border: 1px solid var(--border);
+  /* 預設灰框 */
 }
 
 .btn-outline:hover {
@@ -184,23 +243,25 @@ body {
   box-shadow: 0 4px 12px var(--shadow-gold);
 }
 
-/* 活躍狀態 (用於篩選器選中) - 金色預設 */
+/* 活躍狀態 (Active) - 金色版 */
 .btn-active {
   background: var(--text-primary) !important;
   color: var(--gold) !important;
-  border-color: var(--gold) !important;
+  /* [Anti-Layout Shift] 這裡必須明確定義 border 樣式與寬度，與 .btn-base 的透明邊框對應 */
+  border: 1px solid var(--gold) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* 銀色活躍狀態 (吸血鬼篩選) */
+/* 活躍狀態 (Active) - 銀色版 (吸血鬼相關介面) */
 .btn-active-silver {
   background: var(--text-primary) !important;
   color: var(--silver) !important;
-  border-color: var(--silver) !important;
+  /* [Anti-Layout Shift] 同上 */
+  border: 1px solid var(--silver) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* 銀色 hover 變體 */
+/* 銀色版幽靈按鈕 hover 效果 */
 .btn-outline-silver:hover {
   background: var(--text-primary);
   color: var(--silver);
@@ -209,16 +270,17 @@ body {
   box-shadow: 0 4px 12px var(--shadow-silver);
 }
 
-/* 小型按鈕 (Header/Filters) */
-/* 小型按鈕 (Header/Filters) */
+/* 小型按鈕變體 (用於 Header/Filters) */
 .btn-sm {
   padding: 0.5rem 1.25rem !important;
-  /* Override standard padding */
+  /* 覆寫 Padding */
   font-size: 0.875rem;
   /* 14px */
 }
 
-/* 標籤樣式 (Tags) - 統一膠囊 */
+/* ============================================
+   6. 元件樣式 (Components) - 標籤 (Tags)
+   ============================================ */
 .tag {
   display: inline-flex;
   align-items: center;
@@ -236,7 +298,10 @@ body {
   white-space: nowrap;
 }
 
-/* 自定義滾動條 */
+/* ============================================
+   7. 自定義滾動條樣式 (Custom Scrollbar)
+   Webkit Only (Chrome, Safari, Edge)
+   ============================================ */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -248,48 +313,66 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 4px;
+  /* 圓角滾動條 */
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--gold);
+  /* Hover 時變金色 */
 }
 
 /* ============================================
-   Typography System (文字系統)
+   8. 排版系統 (Typography System)
+   使用 @apply 組合 Tailwind Classes
    ============================================ */
+/* 英雄標題 (Hero Title)：首頁最大標題 */
 .heading-hero {
   @apply text-5xl sm:text-7xl lg:text-8xl font-bold;
   line-height: 1.1;
 }
 
+/* 區塊標題 (Section Title)：內頁主要標題 */
 .heading-section {
   @apply text-3xl sm:text-4xl font-bold;
 }
 
+/* 項目標題 (Item Title)：卡片或列表標題 */
 .heading-item {
   @apply text-xl font-bold;
 }
 
+/* 導言文字 (Lead Text)：重要段落首句 */
 .text-lead {
   @apply text-xl sm:text-2xl font-light;
 }
 
+/* 正文文字 (Body Text)：一般閱讀內容 */
 .text-body {
   @apply text-lg sm:text-xl leading-relaxed;
 }
 
 /* ============================================
-   Layout System (佈局系統)
+   9. 佈局系統 (Layout System)
    ============================================ */
+/* 自適應容器：限制最大寬度並置中 */
 .container-base {
   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
+/* 區塊間距：統一上下 Padding */
 .section-base {
   @apply py-16 md:py-24;
 }
 
-/* 動畫 */
+/* 分隔線 */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+/* ============================================
+   10. 動畫 (Animations)
+   ============================================ */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -306,46 +389,38 @@ body {
   animation: fadeIn 0.6s ease forwards;
 }
 
-/* 分隔線 */
-.divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border), transparent);
-}
-
-/* 平滑滾動 */
-/* 平滑滾動與吸附容器 */
-html {
-  scroll-behavior: smooth;
-  scrollbar-gutter: stable;
-  /* 防止 Scrollbar 出現時導致的 Layout Shift */
-}
-
+/* ============================================
+   11. 特殊功能 - 全屏吸附滾動 (Snap Scroll)
+   用於首頁和角色詳細頁的沉浸式體驗
+   ============================================ */
 .snap-container {
   height: 100vh;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
-  scroll-padding-top: 64px;
-  /* Header height */
+  /* 強制吸附 */
+  scroll-padding-top: 0px;
 }
 
 .snap-section {
   min-height: 100vh;
   scroll-snap-align: start;
+  /* 區塊頂部吸附 */
   scroll-snap-stop: always;
+  /* 防止飛速滾動 */
   display: flex;
   flex-direction: column;
   justify-content: center;
   position: relative;
 }
 
-/* 角色卡片固定高度 */
-/* 角色卡片固定高度 */
+/* 角色卡片固定高度處理 */
 .character-card {
   min-height: 280px;
   display: flex;
   flex-direction: column;
 }
 
+/* 描述文字多行截斷 (Line Clamp) */
 .character-card .description {
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -355,46 +430,56 @@ html {
   flex-grow: 1;
 }
 
-
-/* 地圖區域 hover 效果 - 浮起效果 */
-.map-region {
+/* ============================================
+   12. 世界地圖互動 (Map Region Interactions)
+   SVG 地圖區塊的 Hover 與 Active 效果
+   ============================================ */
+.map-region,
+.map-region-silver {
   fill: transparent;
   stroke: transparent;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 預設：金色 (城市) */
-.map-region:hover {
+/* 共用 Hover 行為 */
+.map-region:hover,
+.map-region-silver:hover {
   fill: rgba(255, 255, 255, 0.08);
-  stroke: var(--gold);
+  /* 半透明白底 */
   stroke-width: 3;
   transform: translateY(-4px) scale(1.01);
+  /* 浮起放大 */
   filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4));
+  /* 浮起陰影 */
+}
+
+/* 共用 Active 行為 */
+.map-region.active,
+.map-region-silver.active {
+  stroke-width: 3;
+  transform: translateY(-2px);
+}
+
+/* --- 金色系 (預設) --- */
+.map-region:hover {
+  stroke: var(--gold);
 }
 
 .map-region.active {
   fill: rgba(201, 162, 39, 0.1);
   stroke: var(--gold);
-  stroke-width: 3;
-  transform: translateY(-2px);
   filter: drop-shadow(0 4px 12px var(--shadow-gold));
 }
 
-/* 銀色變體 (區域/海域) */
+/* --- 銀色系 (Silver) --- */
 .map-region-silver:hover {
-  fill: rgba(255, 255, 255, 0.08);
   stroke: var(--silver);
-  stroke-width: 3;
-  transform: translateY(-4px) scale(1.01);
-  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4));
 }
 
 .map-region-silver.active {
   fill: rgba(168, 168, 168, 0.1);
   stroke: var(--silver);
-  stroke-width: 3;
-  transform: translateY(-2px);
   filter: drop-shadow(0 4px 12px var(--shadow-silver));
 }

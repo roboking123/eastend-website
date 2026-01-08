@@ -35,6 +35,9 @@ export function useAuth() {
             provider: 'google',
             options: {
                 redirectTo: `${window.location.origin}/api/auth/callback`,
+                queryParams: {
+                    prompt: 'select_account', // 每次登入都顯示帳號選擇
+                },
             },
         });
         if (error) {

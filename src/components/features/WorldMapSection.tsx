@@ -1,203 +1,287 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { locations } from "@/constants/locations";
 import { content } from "@/constants/content";
 
 export default function WorldMapSection() {
-    const [selectedLocation, setSelectedLocation] = useState<typeof locations[0] | null>(null);
-    const router = useRouter();
+    // 狀態管理
+    const [isListOpen, setIsListOpen] = useState(true);          // 左側列表是否展開
+    const [isRightPanelOpen, setIsRightPanelOpen] = useState(true); // 右側詳情是否展開
+    const [lockedLocation, setLockedLocation] = useState<typeof locations[0] | null>(null);  // 鎖定的地點
+    const [hoveredLocation, setHoveredLocation] = useState<typeof locations[0] | null>(null); // Hover 中的地點
 
-    // 判斷是否為城市類型（可點擊跳轉）
-    const isCityType = (loc: typeof locations[0]) => loc.type === "city";
+    // 實際顯示的地點：優先顯示 hover 的，否則顯示鎖定的
+    const displayLocation = hoveredLocation || lockedLocation;
+    // 面板可見性：有 hover 或者 (有鎖定且右側開啟)
+    const showRightPanel = hoveredLocation || (lockedLocation && isRightPanelOpen);
 
-    // 使用資料中定義的 theme 屬性判斷配色
+    // 判斷配色
     const isGoldTheme = (loc: typeof locations[0]) => loc.theme === "gold";
 
-    const handleRegionClick = (loc: typeof locations[0]) => {
-        router.push(`/locations/${loc.id}`);
-    };
+    // 標記點互動邏輯
+    const handleMarkerHover = useCallback((loc: typeof locations[0]) => {
+        setHoveredLocation(loc);
+    }, []);
+
+    const handleMarkerLeave = useCallback(() => {
+        setHoveredLocation(null);
+    }, []);
+
+    const handleMarkerClick = useCallback((loc: typeof locations[0]) => {
+        setLockedLocation(loc);
+        setHoveredLocation(null); // 點擊後清除 hover 狀態
+        setIsRightPanelOpen(true); // 點擊時確保展開
+
+        // 手機版：點擊地點時自動收起左側列表
+        if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+            setIsListOpen(false);
+        }
+    }, []);
+
+    const handleMapClick = useCallback(() => {
+        // 點擊地圖空白處：解除鎖定
+        setLockedLocation(null);
+    }, []);
+
+    const handleListItemClick = useCallback((loc: typeof locations[0]) => {
+        // 列表點擊邏輯同標記點
+        handleMarkerClick(loc);
+    }, [handleMarkerClick]);
+
+    const toggleList = useCallback(() => {
+        setIsListOpen(prev => !prev);
+        // 手機版：展開列表時收起詳情
+        if (typeof window !== 'undefined' && window.innerWidth < 1024 && !isListOpen) {
+            // 注意：這裡我們只收起右側面板，而不是清除鎖定，這樣用戶切回來時還能看到
+            setIsRightPanelOpen(false);
+        }
+    }, [isListOpen]);
+
+    const toggleRightPanel = useCallback(() => {
+        // 如果沒有鎖定地點，則無法切換（或無效）
+        if (!lockedLocation && !hoveredLocation) return;
+
+        setIsRightPanelOpen(prev => !prev);
+
+        // 手機版：展開詳情時收起列表
+        // 注意：如果是要展開 (!isRightPanelOpen 為 true)
+        if (typeof window !== 'undefined' && window.innerWidth < 1024 && !isRightPanelOpen) {
+            setIsListOpen(false);
+        }
+    }, [isRightPanelOpen, lockedLocation, hoveredLocation]);
+
+    // 動畫配置
+    // 直接在元素上使用 animate={{ x: ... }}，不再需要複雜的 variants
+
+    // 判斷標記點是否為當前顯示的
+    const isMarkerActive = (loc: typeof locations[0]) => displayLocation?.id === loc.id;
 
     return (
-        <section className="pt-24 pb-12 px-4 bg-surface">
-            <div className="container-base">
-                <div className="text-center mb-12">
-                    <h1 className="heading-section mb-4">
-                        <span className="text-primary">{content.worldMapSection.title}</span>
-                    </h1>
-                    <p className="text-body text-muted max-w-2xl mx-auto">
-                        {content.worldMapSection.description}
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                    {/* Interactive Map */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                        className="lg:col-span-2 relative aspect-square bg-white rounded-2xl overflow-hidden shadow-xl border border-border-base"
-                    >
-                        <div
-                            className="absolute inset-0 z-0"
-                        >
-                            {/* Base Map */}
-                            <Image
-                                src="/images/map_interactive.png"
-                                alt="East End World Map"
-                                fill
-                                className="object-contain"
-                                priority
-                            />
-                        </div>
-
-                        {/* Region Image Slices - only show on hover/select */}
-                        {locations.map((loc) => (
-                            <div
-                                key={loc.id}
-                                className="absolute inset-0 transition-all duration-300 cursor-pointer"
-                                style={{
-                                    opacity: selectedLocation?.id === loc.id ? 1 : 0,
-                                    transform: selectedLocation?.id === loc.id ? 'translateY(-4px)' : 'translateY(0)',
-                                    zIndex: selectedLocation?.id === loc.id ? 20 : 10,
-                                    // 城市用金色光暈，其他用銀色光暈
-                                    filter: selectedLocation?.id === loc.id
-                                        ? (isGoldTheme(loc)
-                                            ? 'drop-shadow(0 0 3px #c9a227) drop-shadow(0 0 8px rgba(201, 162, 39, 0.6)) drop-shadow(0 8px 20px rgba(0,0,0,0.4))'
-                                            : 'drop-shadow(0 0 3px #a8a8a8) drop-shadow(0 0 8px rgba(168, 168, 168, 0.6)) drop-shadow(0 8px 20px rgba(0,0,0,0.4))')
-                                        : 'none',
-                                    pointerEvents: 'none',
-                                }}
-                            >
-                                <Image
-                                    src={loc.image}
-                                    alt={loc.nameTW}
-                                    fill
-                                    className="object-contain"
-                                    priority
-                                />
-                            </div>
-                        ))}
-
-                        {/* Invisible hover areas using SVG */}
-                        <svg
-                            viewBox="0 0 1024 1024"
-                            className="absolute inset-0 w-full h-full z-30 pointer-events-none"
-                            preserveAspectRatio="xMidYMid meet"
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                            }}
-                        >
-                            {/* 外海 - 最底層 background */}
-                            <path
-                                d="M1024 1024H0V0H1024V1024ZM366 78L213.5 172.5L85.5 399.5L68.5 545L137 649.5L141.5 720.5L202 816L323 834.5L442 893.5L525.5 889.5L672.5 779.5L786.5 804.5L875 762.5L945 696L939.927 606.5L945 537L932.5 475.5L882.5 468.5L868.5 372L811 367.5L806 343L842 317L852 228.5L814.5 147L672.5 68.5L445.5 58L366 78Z"
-                                fill="transparent"
-                                className="cursor-pointer pointer-events-auto"
-                                onMouseEnter={() => setSelectedLocation(locations[6])}
-                                onMouseLeave={() => setSelectedLocation(null)}
-                            />
-                            {/* 東末城 */}
-                            <path
-                                d="M759 609V644L742 706L764 724L798 737H830L878 701L870 681L878 631L870 602L844 586H786L759 609Z"
-                                fill="transparent"
-                                className="cursor-pointer pointer-events-auto"
-                                onMouseEnter={() => setSelectedLocation(locations[0])}
-                                onMouseLeave={() => setSelectedLocation(null)}
-                                onClick={() => handleRegionClick(locations[0])}
-                            />
-                            {/* 北都城 */}
-                            <path
-                                d="M446.5 293.5L403.5 276L381.5 279.5L366.5 249L322 204L339 153.5L381.5 132L438 139L489.5 147.5L505.5 132L565 128.5L570.5 110H589L585 139L673 128.5L742.5 169L775.5 226L760 276C763.667 286.167 771.9 307.2 775.5 310C779.1 312.8 777 326.5 775.5 333H710L643.5 327L596 344.5L538.5 315.5L446.5 293.5Z"
-                                fill="transparent"
-                                className="cursor-pointer pointer-events-auto"
-                                onMouseEnter={() => setSelectedLocation(locations[1])}
-                                onMouseLeave={() => setSelectedLocation(null)}
-                                onClick={() => handleRegionClick(locations[1])}
-                            />
-                            {/* 西教廷 (聖樹) */}
-                            <path
-                                d="M258 415L183 399L158 415L134 476L158 547L203 590L282 542L296 447L258 415Z"
-                                fill="transparent"
-                                className="cursor-pointer pointer-events-auto"
-                                onMouseEnter={() => setSelectedLocation(locations[2])}
-                                onMouseLeave={() => setSelectedLocation(null)}
-                                onClick={() => handleRegionClick(locations[2])}
-                            />
-                            {/* 荒野地帶 */}
-                            <path
-                                d="M447 298L536.5 319L596 347.5L647 329L711 336H729V352L737.5 371.5L732 383L697.5 376.5L684.5 393.5L711 424.5L697.5 466L711 476.5L697.5 486.5L673 476.5L641.5 503L615.5 499L573.5 492H546L529.5 503L540.5 528L543 547L524.5 550L519.5 529.5L505.5 509.5L490.5 503L477.5 499L470 503L463 499H452L440 495.5L425.5 503L414 499L425.5 537L401 541.5L380.5 509.5L370 476.5L356.5 437L336.5 386.5L312.5 371.5L325 329L356.5 294.5L374 287L398 280L447 298ZM535.5 386C518.103 386 504 400.103 504 417.5C504 434.897 518.103 449 535.5 449C552.897 449 567 434.897 567 417.5C567 400.103 552.897 386 535.5 386Z"
-                                fill="transparent"
-                                className="cursor-pointer pointer-events-auto"
-                                onMouseEnter={() => setSelectedLocation(locations[4])}
-                                onMouseLeave={() => setSelectedLocation(null)}
-                            />
-                            {/* 內海 */}
-                            <path
-                                d="M448 598L415 625L397 649V670L415 710V748L454 768L504 760L563 734L570 722L610 678L627 644L610 590L570 565L528 557L497 582L448 598Z"
-                                fill="transparent"
-                                className="cursor-pointer pointer-events-auto"
-                                onMouseEnter={() => setSelectedLocation(locations[5])}
-                                onMouseLeave={() => setSelectedLocation(null)}
-                            />
-                            {/* 首都遺址 - Top layer for easy clicking */}
-                            <circle
-                                cx="535.5" cy="417.5" r="31.5"
-                                fill="transparent"
-                                className="cursor-pointer pointer-events-auto"
-                                onMouseEnter={() => setSelectedLocation(locations[3])}
-                                onMouseLeave={() => setSelectedLocation(null)}
-                            />
-                        </svg>
-                    </motion.div>
-
-                    {/* Location Info Card */}
-                    <div className="lg:col-span-1 h-full">
-                        <div className="card p-8 h-full min-h-[350px] flex flex-col justify-center">
-                            {selectedLocation ? (
-                                <>
-                                    <div className="flex items-center gap-3 mb-6">
-                                        {/* 城市用金色，其他用銀色 */}
-                                        <span className={`w-1 h-8 ${isGoldTheme(selectedLocation) ? 'bg-gold' : 'bg-silver'}`}></span>
-                                        <div>
-                                            <h2 className="text-2xl font-bold text-primary">
-                                                {selectedLocation.nameTW}
-                                            </h2>
-                                            <p className="text-muted italic">
-                                                {selectedLocation.name}
-                                            </p>
-                                        </div>
+        <section className="h-[calc(100vh)] bg-surface overflow-hidden flex flex-col pt-16 relative">
+            {/* 左側列表面板容器 - 移至根層級，跨越標題與地圖 */}
+            <motion.div
+                className="absolute left-0 top-16 bottom-0 z-20 flex items-center"
+                initial={false}
+                animate={{ x: isListOpen ? 0 : -256 }} // 256px 是 w-64 的寬度
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+                {/* 列表面板 */}
+                <div className="h-full w-64 bg-background/95 backdrop-blur-sm border-r border-border-base overflow-y-auto">
+                    <div className="p-4">
+                        <h3 className="text-lg font-bold text-primary mb-4">地點列表</h3>
+                        <div className="space-y-2">
+                            {locations.map((loc) => (
+                                <button
+                                    key={loc.id}
+                                    onClick={() => handleListItemClick(loc)}
+                                    className={`w-full text-left px-3 py-2 rounded-lg transition-all ${lockedLocation?.id === loc.id
+                                        ? isGoldTheme(loc)
+                                            ? "bg-primary text-gold"
+                                            : "bg-primary text-silver"
+                                        : "text-secondary hover:bg-surface"
+                                        }`}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <span className={`w-2 h-2 rounded-full ${isGoldTheme(loc) ? "bg-gold" : "bg-silver"
+                                            }`} />
+                                        <span className="font-medium">{loc.nameTW}</span>
                                     </div>
-
-                                    <div className="w-full h-px bg-border-base mb-6"></div>
-
-                                    <p className="text-secondary leading-loose text-lg mb-6">
-                                        {selectedLocation.description}
-                                    </p>
-
-                                    {/* View Details Button - all locations */}
-                                    <Link
-                                        href={`/locations/${selectedLocation.id}`}
-                                        className={`btn-outline btn-sm self-start ${!isGoldTheme(selectedLocation) ? 'btn-outline-silver' : ''}`}
-                                    >
-                                        查看詳情 →
-                                    </Link>
-                                </>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center h-full text-muted">
-                                    <p className="text-xl">{content.worldMapSection.placeholder.title}</p>
-                                    <p className="text-sm mt-2">{content.worldMapSection.placeholder.subtitle}</p>
-                                </div>
-                            )}
+                                    <span className="text-xs text-muted ml-4">{loc.name}</span>
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </div>
+
+                {/* 展開/收合按鈕 */}
+                <button
+                    onClick={toggleList}
+                    className="w-6 h-12 rounded-r-full bg-primary/90 backdrop-blur-sm flex items-center justify-center hover:bg-primary transition-colors shadow-lg"
+                    aria-label={isListOpen ? "收合列表" : "展開列表"}
+                >
+                    <span className="text-gold text-xs pl-1">
+                        {isListOpen ? "◀" : "▶"}
+                    </span>
+                </button>
+            </motion.div>
+
+            {/* 右側詳情面板容器 - 移至根層級，跨越標題與地圖 */}
+            <motion.div
+                className="absolute right-0 top-16 bottom-0 z-20 flex items-center"
+                initial={false}
+                animate={{ x: (showRightPanel && displayLocation) ? 0 : 320 }} // 320px 是 w-80 的寬度
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+                {/* 展開/收合按鈕 */}
+                <button
+                    onClick={toggleRightPanel}
+                    className={`w-6 h-12 rounded-l-full bg-primary/90 backdrop-blur-sm flex items-center justify-center transition-colors shadow-lg z-30 ${displayLocation ? "hover:bg-primary cursor-pointer" : "opacity-50 cursor-not-allowed"
+                        }`}
+                    aria-label={showRightPanel ? "收合詳情" : "展開詳情"}
+                    disabled={!displayLocation}
+                >
+                    <span className={`text-xs pr-1 ${displayLocation
+                        ? (isGoldTheme(displayLocation) ? "text-gold" : "text-silver")
+                        : "text-muted"
+                        }`}>
+                        {showRightPanel ? "▶" : "◀"}
+                    </span>
+                </button>
+
+                {/* 詳情面板內容 */}
+                <div className="h-full w-80 bg-background/95 backdrop-blur-sm border-l border-border-base overflow-y-auto">
+                    {displayLocation ? (
+                        <div className="p-6">
+                            {/* 標題區 */}
+                            <div className="flex items-center gap-3 mb-6">
+                                <span className={`w-1 h-8 ${isGoldTheme(displayLocation) ? "bg-gold" : "bg-silver"}`} />
+                                <div>
+                                    <h2 className="text-2xl font-bold text-primary">
+                                        {displayLocation.nameTW}
+                                    </h2>
+                                    <p className="text-muted italic text-sm">
+                                        {displayLocation.name}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="w-full h-px bg-border-base mb-6" />
+
+                            {/* 描述 */}
+                            <p className="text-secondary leading-relaxed mb-6">
+                                {displayLocation.description}
+                            </p>
+
+                            {/* 鎖定狀態指示 */}
+                            {lockedLocation?.id === displayLocation.id ? (
+                                <p className="text-xs text-muted mb-4">
+                                    📌 已固定顯示 · 點擊地圖空白處取消
+                                </p>
+                            ) : (
+                                <p className="text-xs text-muted mb-4">
+                                    👆 點擊標記點可固定顯示
+                                </p>
+                            )}
+
+                            {/* 查看詳情按鈕 */}
+                            <Link
+                                href={`/locations/${displayLocation.id}`}
+                                className={`btn-outline btn-sm ${!isGoldTheme(displayLocation) ? "btn-outline-silver" : ""
+                                    }`}
+                            >
+                                查看詳情 →
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="p-6 text-center text-muted mt-20">
+                            請選擇地點以查看詳情
+                        </div>
+                    )}
+                </div>
+            </motion.div>
+
+            {/* 標題區域 - 靜態定位，不與地圖重疊 */}
+            <div className="flex-none py-4 text-center z-10 w-full bg-surface/50 backdrop-blur-sm pointer-events-none">
+                <h1 className="text-3xl md:text-5xl font-bold text-primary drop-shadow-xl opacity-90">
+                    {content.worldMapSection.title}
+                </h1>
+                <p className="text-muted mt-2 text-lg drop-shadow-md opacity-80">
+                    {content.worldMapSection.description}
+                </p>
             </div>
-        </section >
+
+            {/* 地圖與面板的主容器 - 佔據剩餘空間 */}
+            <div className="flex-1 relative w-full h-full overflow-hidden">
+                {/* 中央地圖區域 */}
+                <div
+                    className="absolute inset-0 flex items-center justify-center bg-surface"
+                    onClick={handleMapClick}
+                >
+                    {/* 底圖 */}
+                    <div className="relative w-full h-full max-w-4xl max-h-full p-4 mx-auto">
+                        <Image
+                            src="/images/map_interactive.png"
+                            alt="East End World Map"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
+
+                        {/* 標記點 */}
+                        {locations.map((loc) => (
+                            <button
+                                key={loc.id}
+                                className={`absolute transform -translate-x-1/2 -translate-y-full z-10 transition-all duration-300 group cursor-pointer ${isMarkerActive(loc) ? "scale-125 z-20" : "scale-100 hover:scale-110 z-10"
+                                    }`}
+                                style={{
+                                    left: `${loc.position.x}%`,
+                                    top: `${loc.position.y}%`,
+                                }}
+                                onMouseEnter={() => handleMarkerHover(loc)}
+                                onMouseLeave={handleMarkerLeave}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleMarkerClick(loc);
+                                }}
+                                aria-label={loc.nameTW}
+                            >
+                                <div className="relative flex flex-col items-center">
+                                    {/* 定位針圖示 */}
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        stroke="rgba(0,0,0,0.8)"
+                                        strokeWidth="1"
+                                        className={`w-10 h-10 drop-shadow-lg filter transition-colors ${isMarkerActive(loc)
+                                            ? isGoldTheme(loc) ? "text-gold" : "text-silver"
+                                            : isGoldTheme(loc) ? "text-gold/80 hover:text-gold" : "text-silver/80 hover:text-silver"
+                                            }`}
+                                    >
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                    </svg>
+
+                                    {/* 懸浮動畫效果 - 針尖陰影 */}
+                                    <div className="absolute -bottom-1 w-4 h-1 bg-black/30 rounded-[100%] blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                    {/* 地點名稱標籤 - 移到針的上方或旁邊比較清楚，這裡設在上方 */}
+                                    <div className={`absolute bottom-full mb-1 whitespace-nowrap text-sm font-bold px-2 py-0.5 rounded backdrop-blur-sm shadow-sm transition-all
+                                        ${isMarkerActive(loc)
+                                            ? "opacity-100 bg-background/80 translate-y-0"
+                                            : "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0"
+                                        } 
+                                        ${isGoldTheme(loc) ? "text-black border border-gold/30" : "text-black border border-silver/30"}`}>
+                                        {loc.nameTW}
+                                    </div>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </section>
     );
 }
-

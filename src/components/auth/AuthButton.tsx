@@ -7,9 +7,10 @@ export function AuthButton() {
     const { user, loading, signInWithGoogle, signOut } = useAuth();
 
     if (loading) {
+        // 載入時顯示透明佔位符，避免頁面切換閃爍
         return (
-            <button className={styles.authButton} disabled>
-                載入中...
+            <button className={styles.authButton} disabled style={{ opacity: 0 }}>
+
             </button>
         );
     }

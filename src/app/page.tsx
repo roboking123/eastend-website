@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroMapBackground from "@/components/features/HeroMapBackground";
 import { content } from "@/constants/content";
@@ -9,7 +8,6 @@ export default function HomePage() {
 
     return (
         <div className="bg-background text-primary snap-container">
-            <Header />
             {/* Hero Section */}
             <section className="snap-section relative overflow-hidden bg-surface">
                 {/* 模糊地圖背景 (Motion Layout) */}
