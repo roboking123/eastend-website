@@ -12,7 +12,7 @@ export const locations = [
         nameTW: "東末城",
         type: "city" as CityType,
         theme: "silver" as ThemeColor, // 吸血鬼/黑王統治
-        position: { x: 76.5, y: 61.8 }, // 右下方
+        position: { x: 80.5, y: 61.8 }, // 右下方
         faction: "獨立城邦",
         ruler: "東末城主",
         description: "在帝國滅亡後建立的庇護所型城市，唯一允許人類與吸血鬼平等待遇的城市。位於世界最東端，背靠虛無之海，是退無可退的最後堡壘。",
@@ -46,7 +46,7 @@ export const locations = [
         nameTW: "北都城",
         type: "city" as CityType,
         theme: "gold" as ThemeColor, // 人類/薪王統治，吸血鬼僅為躲藏客居
-        position: { x: 52.2, y: 24 }, // 上方偏中
+        position: { x: 52.5, y: 24.0 }, // 上方偏中
         faction: "北郡",
         ruler: "薪王",
         description: "原帝國「北郡城」，帝國滅亡後由薪王統治。吸血鬼的傳統躲藏地之一，與東末城有頻繁貿易往來。",
@@ -73,7 +73,7 @@ export const locations = [
         nameTW: "西教廷",
         type: "city" as CityType,
         theme: "gold" as ThemeColor, // 人類/聖樹信仰
-        position: { x: 25.3, y: 49.5 }, // 左側中間
+        position: { x: 21.5, y: 50 }, // 左側中間
         faction: "聖樹教廷",
         ruler: "大祭司",
         description: "琉華/聖樹的勢力範圍，激進主張滅絕吸血鬼的宗教城邦。原為火之國的封地，帝國滅亡後成為獨立的宗教勢力。",
@@ -148,7 +148,7 @@ export const locations = [
         nameTW: "虛無之海",
         type: "sea" as CityType,
         theme: "silver" as ThemeColor, // 神秘未知/月神造物
-        position: { x: 12, y: 63 }, // 左下角（代表整個外圍）
+        position: { x: 7, y: 63 }, // 左下角（代表整個外圍）
         faction: "無",
         description: "包圍整個大陸的致命區域。",
         image: "/images/regions/Frame 6.png",

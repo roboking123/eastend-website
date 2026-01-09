@@ -8,7 +8,7 @@ export default function RacesPage() {
                 <section className="pb-12 px-4">
                     <div className="max-w-7xl mx-auto">
                         <div className="text-center">
-                            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                            <h1 className="heading-section mb-4">
                                 <span className="text-primary">種族介紹</span>
                             </h1>
                             <p className="text-muted max-w-2xl mx-auto text-lg leading-relaxed">

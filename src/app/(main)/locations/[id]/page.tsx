@@ -2,7 +2,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import ThemeSetter from "@/components/features/ThemeSetter";
 import { locations } from "@/constants/locations";
+import { Theme } from "@/contexts/ThemeContext";
 
 // SSG: Generate static paths for all locations
 export function generateStaticParams() {
@@ -40,6 +42,8 @@ export default async function LocationDetailPage({
 
     return (
         <main className="pt-24 pb-16">
+            {/* 設置頁面主題 */}
+            <ThemeSetter theme={(loc.theme as Theme) || "gold"} />
             <div className="container-base">
                 {/* Back Button */}
                 <Link
@@ -143,6 +147,6 @@ export default async function LocationDetailPage({
                     </div>
                 )}
             </div>
-        </main>
+        </main >
     );
 }

@@ -38,11 +38,11 @@ interface SaveSlotCardProps {
 
 function SaveSlotCard({ slot, onLoad, onSave, onDelete, onEdit }: SaveSlotCardProps) {
     return (
-        <div className={`card overflow-hidden ${slot.isEmpty ? 'opacity-70 border-dashed' : ''}`}>
+        <div className={`card overflow-hidden h-full flex flex-col ${slot.isEmpty ? 'opacity-70 border-dashed' : ''}`}>
             {/* 頂部裝飾條 */}
             <div className="h-1 w-full bg-gold"></div>
 
-            <div className="p-6">
+            <div className="p-6 flex-1 flex flex-col">
                 <div className="flex justify-between items-center mb-4">
                     <span className="tag">存檔 {slot.slotNumber}</span>
                     {!slot.isEmpty && (
@@ -57,7 +57,7 @@ function SaveSlotCard({ slot, onLoad, onSave, onDelete, onEdit }: SaveSlotCardPr
                 </div>
 
                 {slot.isEmpty ? (
-                    <div className="flex flex-col items-center justify-center py-8 gap-4">
+                    <div className="flex flex-col items-center justify-center flex-1 gap-4">
                         <span className="text-muted">空存檔槽</span>
                         <button className="btn-outline btn-sm" onClick={onSave}>
                             新建存檔
@@ -65,28 +65,33 @@ function SaveSlotCard({ slot, onLoad, onSave, onDelete, onEdit }: SaveSlotCardPr
                     </div>
                 ) : (
                     <>
-                        <h3 className="text-xl font-bold text-primary mb-1">
-                            {slot.saveName || '未命名存檔'}
-                        </h3>
-                        <div className="flex justify-between text-sm text-secondary mb-3">
-                            <span>{slot.characterName || '未知角色'}</span>
-                            <span>Lv.{slot.characterLevel || 1}</span>
+                        <div className="flex-1">
+                            <h3 className="text-xl font-bold text-primary mb-1">
+                                {slot.saveName || '未命名存檔'}
+                            </h3>
+                            <div className="flex justify-between text-sm text-secondary mb-3">
+                                <span>{slot.characterName || '未知角色'}</span>
+                                <span>Lv.{slot.characterLevel || 1}</span>
+                            </div>
+                            <div className="text-xs text-muted space-y-1 mb-4">
+                                <div>遊戲時間: {formatPlayTime(slot.playTime)}</div>
+                                <div>{formatDate(slot.updatedAt)}</div>
+                            </div>
                         </div>
-                        <div className="text-xs text-muted space-y-1 mb-4">
-                            <div>遊戲時間: {formatPlayTime(slot.playTime)}</div>
-                            <div>{formatDate(slot.updatedAt)}</div>
-                        </div>
-                        <div className="flex gap-2 mb-2">
-                            <button className="btn-outline btn-sm flex-1" onClick={onLoad}>
-                                讀取
+
+                        <div className="mt-auto pt-4">
+                            <div className="flex gap-2 mb-2">
+                                <button className="btn-outline btn-sm flex-1" onClick={onLoad}>
+                                    讀取
+                                </button>
+                                <button className="btn-outline btn-sm flex-1" onClick={onSave}>
+                                    覆蓋
+                                </button>
+                            </div>
+                            <button className="btn-outline btn-sm w-full" onClick={onEdit}>
+                                編輯名稱
                             </button>
-                            <button className="btn-outline btn-sm flex-1" onClick={onSave}>
-                                覆蓋
-                            </button>
                         </div>
-                        <button className="btn-outline btn-sm w-full" onClick={onEdit}>
-                            編輯名稱
-                        </button>
                     </>
                 )}
             </div>
@@ -109,20 +114,31 @@ export function SaveSlots() {
 
         // 如果是空槽位，建立新存檔（測試用）
         if (slot?.isEmpty) {
-            const saveName = await modal.prompt('請輸入存檔名稱', '新冒險');
-            if (!saveName) return;
+            const result = await modal.form('建立新冒險', [
+                {
+                    label: '存檔名稱',
+                    name: 'saveName',
+                    defaultValue: '新冒險',
+                    placeholder: '輸入存檔名稱'
+                },
+                {
+                    label: '角色名稱',
+                    name: 'characterName',
+                    defaultValue: '冒險者',
+                    placeholder: '輸入角色名稱'
+                }
+            ]);
 
-            const characterName = await modal.prompt('請輸入角色名稱', '冒險者');
-            if (!characterName) return;
+            if (!result) return;
 
             const testSave = {
                 slotNumber,
-                saveName,
+                saveName: result.saveName,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
                 version: 1,
                 characterData: {
-                    name: characterName,
+                    name: result.characterName,
                     race: '人類',
                     class: '冒險者',
                     level: 1,
@@ -175,18 +191,29 @@ export function SaveSlots() {
         const currentSave = await getSave(slotNumber);
         if (!currentSave) return;
 
-        const newSaveName = await modal.prompt('編輯存檔名稱', currentSave.saveName);
-        if (!newSaveName || newSaveName === currentSave.saveName) return;
+        const result = await modal.form('編輯存檔資料', [
+            {
+                label: '存檔名稱',
+                name: 'saveName',
+                defaultValue: currentSave.saveName,
+                placeholder: '輸入存檔名稱'
+            },
+            {
+                label: '角色名稱',
+                name: 'characterName',
+                defaultValue: currentSave.characterData.name,
+                placeholder: '輸入角色名稱'
+            }
+        ]);
 
-        const newCharacterName = await modal.prompt('編輯角色名稱', currentSave.characterData.name);
-        if (!newCharacterName) return;
+        if (!result) return;
 
         const updatedSave = {
             ...currentSave,
-            saveName: newSaveName,
+            saveName: result.saveName,
             characterData: {
                 ...currentSave.characterData,
-                name: newCharacterName,
+                name: result.characterName,
             },
         };
 

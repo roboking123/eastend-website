@@ -17,7 +17,7 @@ export default function CharactersPage() {
             <section className="pt-24 pb-12 px-4 bg-surface">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                        <h1 className="heading-section mb-4">
                             <span className="text-primary">{title}</span>
                         </h1>
                         <p className="text-muted max-w-2xl mx-auto text-lg leading-relaxed">
@@ -28,13 +28,9 @@ export default function CharactersPage() {
             </section>
 
             {/* Characters Section */}
-            <section className="py-24 px-4 bg-background">
+            <section className="pb-16 px-4">
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
-                        <h2 className="text-3xl font-bold">
-                            <span className="text-primary">{title}</span>
-                        </h2>
-
+                    <div className="flex flex-col md:flex-row justify-end items-center mb-12 gap-6">
                         {/* Filter */}
                         <div className="flex flex-wrap gap-2 justify-center md:justify-end">
                             {(["all", "吸血鬼", "大精靈", "人類"] as const).map((type) => {
@@ -90,7 +86,7 @@ export default function CharactersPage() {
 
                                         {/* Description with tooltip for full text */}
                                         <p
-                                            className="text-secondary text-sm leading-relaxed line-clamp-3 flex-grow"
+                                            className="text-secondary text-sm leading-relaxed line-clamp-3"
                                             title={char.description}
                                         >
                                             {char.description}

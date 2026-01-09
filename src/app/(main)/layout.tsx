@@ -7,7 +7,7 @@ export default function MainLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="min-h-screen bg-background text-primary">
+        <div className="min-h-screen bg-surface text-primary">
             <Header />
             <main>{children}</main>
             <Footer />

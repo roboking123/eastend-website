@@ -5,19 +5,33 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { content } from "@/constants/content";
 import { AuthButton } from "@/components/auth";
+import { useThemeSafe } from "@/contexts/ThemeContext";
 
-export default function Header() {
+interface HeaderProps {
+    sticky?: boolean; // true = relative/sticky (for scroll pages), false = fixed (default)
+}
+
+export default function Header({ sticky = false }: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const pathname = usePathname();
     const { logo, nav } = content.header;
+    const { theme } = useThemeSafe();
+
+    // 根據主題選擇活躍按鈕樣式
+    const activeClass = theme === 'silver' ? 'btn-active-silver' : 'btn-active';
+    const hoverColor = theme === 'silver' ? 'silver' : 'gold';
 
     const isActive = (path: string) => {
         if (path === '/') return pathname === '/';
         return pathname.startsWith(path);
     };
 
+    const positionClass = sticky
+        ? "sticky top-0" // 相對定位，跟隨區塊滾動
+        : "fixed top-0 left-0 right-0"; // 固定定位
+
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border-base">
+        <header className={`${positionClass} z-50 bg-background/95 backdrop-blur-md border-b border-border-base`}>
             <div className="container-base">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
@@ -43,9 +57,8 @@ export default function Header() {
                                 key={item.href}
                                 href={item.href}
                                 className={`btn-sm transition-all duration-300 ${isActive(item.href)
-                                    ? "btn-active" // High Contrast (Dark/Gold) for Active
-                                    : "btn-outline border-transparent hover:bg-primary hover:text-gold hover:border-gold"
-                                    // Explicit override for Dark/Gold Hover using system tokens
+                                    ? activeClass
+                                    : `btn-outline border-transparent hover:bg-primary hover:text-${hoverColor} hover:border-${hoverColor}`
                                     }`}
                             >
                                 {item.label}
@@ -93,8 +106,8 @@ export default function Header() {
                                 key={item.href}
                                 href={item.href}
                                 className={`block py-3 px-4 rounded-lg transition-all ${isActive(item.href)
-                                    ? "bg-primary text-gold font-bold" // Mobile Active
-                                    : "text-secondary hover:bg-primary hover:text-gold"
+                                    ? `bg-primary text-${hoverColor} font-bold`
+                                    : `text-secondary hover:bg-primary hover:text-${hoverColor}`
                                     }`}
                                 onClick={() => setIsMenuOpen(false)}
                             >

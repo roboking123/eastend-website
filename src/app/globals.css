@@ -261,7 +261,22 @@ html {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* 銀色版幽靈按鈕 hover 效果 */
+/* 銀色版幽靈按鈕 (吸血鬼相關介面) */
+.btn-outline-silver {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 .btn-outline-silver:hover {
   background: var(--text-primary);
   color: var(--silver);
@@ -397,8 +412,9 @@ html {
   height: 100vh;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
-  /* 強制吸附 */
-  scroll-padding-top: 0px;
+  /* mandatory + scroll-padding 達到自訂閾值效果 */
+  scroll-padding-top: 20vh;
+  /* 10% 緩衝區 */
 }
 
 .snap-section {
@@ -420,14 +436,26 @@ html {
   flex-direction: column;
 }
 
-/* 描述文字多行截斷 (Line Clamp) */
-.character-card .description {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex-grow: 1;
+/* 通用多行截斷 (Line Clamp Utilities) */
+.line-clamp-2 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+.line-clamp-3 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+.line-clamp-4 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 4 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
 }
 
 /* ============================================
